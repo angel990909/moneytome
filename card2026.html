@@ -313,7 +313,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- 銀行方案詳細卡片 --- */
+        /* --- 銀行方案詳細卡片 (互動版) --- */
         .scheme-card {
             background: #fff;
             border-radius: 16px;
@@ -321,6 +321,14 @@
             margin-bottom: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border-left: 5px solid #ccc;
+            /* 互動樣式 */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .scheme-card:hover {
+            transform: translateY(-2px);
         }
 
         /* Bank Specific Borders & Titles */
@@ -330,8 +338,42 @@
         #cathay .scheme-card { border-left-color: var(--cathay-color); }
         #cathay .scheme-title { color: var(--cathay-color); background: var(--cathay-bg); }
         
-        #esun .scheme-card { border-left-color: var(--esun-color); }
+        #esun .scheme-card { border-left-color: var(--esun-color); cursor: default; } /* 玉山卡片本身不點選 */
         #esun .scheme-title { color: var(--esun-color); background: var(--esun-bg); }
+
+        /* --- 方案選取狀態 (Active Scheme) --- */
+        .scheme-card.active-scheme {
+            background-color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border: 2px solid;
+        }
+
+        #taishin .scheme-card.active-scheme { border-color: var(--taishin-color); background-color: #fff9f9; }
+        #cathay .scheme-card.active-scheme { border-color: var(--cathay-color); background-color: #f7fff9; }
+
+        /* 狀態徽章 */
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #taishin .scheme-card.active-scheme .status-badge {
+            display: block;
+            background: var(--taishin-color);
+            color: white;
+        }
+        #cathay .scheme-card.active-scheme .status-badge {
+            display: block;
+            background: var(--cathay-color);
+            color: white;
+        }
 
         .scheme-header {
             display: flex;
@@ -385,6 +427,49 @@
             font-weight: 500;
         }
 
+        /* --- 玉山特店互動樣式 --- */
+        #esun .merchant {
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        #esun .merchant:hover {
+            background-color: #e0f2f1;
+        }
+        #esun .merchant.selected-merchant {
+            background-color: var(--esun-color);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            font-weight: 700;
+        }
+
+        /* 玉山選取計數器 */
+        .esun-counter {
+            position: sticky;
+            top: 60px; /* 位於分頁按鈕下方 */
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            color: var(--esun-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--esun-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 90;
+        }
+        .reset-btn {
+            background: #f0f2f5;
+            border: none;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
         .footer-note {
             margin-top: 40px;
             font-size: 0.85rem;
@@ -392,6 +477,14 @@
             text-align: center;
             border-top: 2px dashed #e0e0e0;
             padding-top: 20px;
+        }
+
+        .interaction-hint {
+            font-size: 0.85rem;
+            color: #999;
+            text-align: center;
+            margin-bottom: 10px;
+            display: block;
         }
     </style>
 </head>
@@ -647,7 +740,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- View 2: 銀行權益詳細對照 (包含銀行子分頁) -->
+    <!-- View 2: 銀行權益詳細對照 (包含互動功能) -->
     <!-- ========================================== -->
     <div id="view-banks" class="view-section">
         
@@ -659,7 +752,10 @@
 
         <!-- 台新銀行內容 -->
         <div id="taishin" class="tab-content active">
-            <div class="scheme-card">
+            <span class="interaction-hint">👆 點擊卡片可切換您的目前方案</span>
+            
+            <div class="scheme-card active-scheme">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">天天刷</span>
                     <span class="scheme-desc">超商、量販、通勤首選</span>
@@ -689,6 +785,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">Pay 著刷</span>
                     <span class="scheme-desc">行動支付專用 (3.8%)</span>
@@ -704,6 +801,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">大筆刷</span>
                     <span class="scheme-desc">百貨、居家、時尚</span>
@@ -722,6 +820,7 @@
             </div>
             
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">好饗刷</span>
                     <span class="scheme-desc">全台餐飲、娛樂</span>
@@ -737,6 +836,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">數趣刷</span>
                     <span class="scheme-desc">網購、影音、遊戲</span>
@@ -753,6 +853,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">玩旅刷</span>
                     <span class="scheme-desc">海外、航空</span>
@@ -767,6 +868,7 @@
             </div>
             
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">假日刷</span>
                     <span class="scheme-desc">週末限定 (2%)</span>
@@ -782,7 +884,10 @@
 
         <!-- 國泰銀行內容 -->
         <div id="cathay" class="tab-content">
-            <div class="scheme-card">
+            <span class="interaction-hint">👆 點擊卡片可切換您的目前方案</span>
+
+            <div class="scheme-card active-scheme">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">趣旅行</span>
                     <span class="scheme-desc">海外、交通、住宿 (3.3% 無上限)</span>
@@ -799,6 +904,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">樂饗購</span>
                     <span class="scheme-desc">百貨、餐飲、外送</span>
@@ -816,6 +922,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">玩數位</span>
                     <span class="scheme-desc">網購、串流、遊戲</span>
@@ -832,6 +939,7 @@
             </div>
 
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">集精選</span>
                     <span class="scheme-desc">超市、超商、加油 (約 2%)</span>
@@ -848,6 +956,7 @@
             </div>
             
             <div class="scheme-card">
+                <div class="status-badge">目前方案</div>
                 <div class="scheme-header">
                     <span class="scheme-title">慶生月</span>
                     <span class="scheme-desc">壽星專屬</span>
@@ -864,6 +973,13 @@
 
         <!-- 玉山銀行內容 -->
         <div id="esun" class="tab-content">
+            <!-- 玉山專屬計數器 -->
+            <div class="esun-counter">
+                <span>已選特店：<span id="merchant-count">0</span> / 8</span>
+                <button class="reset-btn" onclick="resetMerchants()">重置</button>
+            </div>
+            <span class="interaction-hint">👇 點擊下方標籤模擬「任意選」特店</span>
+
             <div class="scheme-card">
                 <div class="scheme-header">
                     <span class="scheme-title">Unicard 任意選/UP選</span>
@@ -884,28 +1000,44 @@
                 <div class="category-group">
                     <span class="cat-name">網購電商</span>
                     <div class="merchant-list">
-                        <span class="merchant">蝦皮/momo/PChome</span>
-                        <span class="merchant">淘寶/Coupang</span>
-                        <span class="merchant">Yahoo/博客來</span>
+                        <span class="merchant">蝦皮</span>
+                        <span class="merchant">momo</span>
+                        <span class="merchant">PChome</span>
+                        <span class="merchant">淘寶</span>
+                        <span class="merchant">Coupang</span>
+                        <span class="merchant">Yahoo</span>
+                        <span class="merchant">博客來</span>
                     </div>
                 </div>
 
                 <div class="category-group">
                     <span class="cat-name">百貨 Outlet</span>
                     <div class="merchant-list">
-                        <span class="merchant">新光三越/SOGO/遠百</span>
-                        <span class="merchant">101/微風/誠品</span>
-                        <span class="merchant">三井/Lalaport/華泰</span>
+                        <span class="merchant">新光三越</span>
+                        <span class="merchant">SOGO</span>
+                        <span class="merchant">遠百</span>
+                        <span class="merchant">台北 101</span>
+                        <span class="merchant">微風</span>
+                        <span class="merchant">誠品</span>
+                        <span class="merchant">三井 Outlet</span>
+                        <span class="merchant">Lalaport</span>
+                        <span class="merchant">華泰名品城</span>
                     </div>
                 </div>
 
                 <div class="category-group">
                     <span class="cat-name">生活 / 藥妝</span>
                     <div class="merchant-list">
-                        <span class="merchant">家樂福/大潤發</span>
-                        <span class="merchant">屈臣氏/康是美/寶雅</span>
-                        <span class="merchant">IKEA/無印良品</span>
-                        <span class="merchant">UNIQLO/GU/ZARA</span>
+                        <span class="merchant">家樂福</span>
+                        <span class="merchant">大潤發</span>
+                        <span class="merchant">屈臣氏</span>
+                        <span class="merchant">康是美</span>
+                        <span class="merchant">寶雅</span>
+                        <span class="merchant">IKEA</span>
+                        <span class="merchant">無印良品</span>
+                        <span class="merchant">UNIQLO</span>
+                        <span class="merchant">GU</span>
+                        <span class="merchant">ZARA</span>
                         <span class="merchant">Apple 直營/官網</span>
                     </div>
                 </div>
@@ -913,30 +1045,42 @@
                 <div class="category-group">
                     <span class="cat-name">餐飲 / 外送</span>
                     <div class="merchant-list">
-                        <span class="merchant">Uber Eats/foodpanda</span>
-                        <span class="merchant">星巴克/路易莎</span>
-                        <span class="merchant">麥當勞/肯德基</span>
-                        <span class="merchant">王品集團/饗賓集團</span>
+                        <span class="merchant">Uber Eats</span>
+                        <span class="merchant">foodpanda</span>
+                        <span class="merchant">星巴克</span>
+                        <span class="merchant">路易莎</span>
+                        <span class="merchant">麥當勞</span>
+                        <span class="merchant">肯德基</span>
+                        <span class="merchant">王品集團</span>
+                        <span class="merchant">饗賓集團</span>
                     </div>
                 </div>
 
                 <div class="category-group">
                     <span class="cat-name">交通 / 旅遊</span>
                     <div class="merchant-list">
-                        <span class="merchant">高鐵/台鐵/Uber</span>
-                        <span class="merchant">中油/台亞/全國</span>
+                        <span class="merchant">高鐵</span>
+                        <span class="merchant">台鐵</span>
+                        <span class="merchant">Uber</span>
+                        <span class="merchant">中油</span>
+                        <span class="merchant">台亞</span>
+                        <span class="merchant">全國加油站</span>
                         <span class="merchant">全航空公司</span>
-                        <span class="merchant">Agoda/Booking/Klook</span>
+                        <span class="merchant">Agoda</span>
+                        <span class="merchant">Booking</span>
+                        <span class="merchant">Klook</span>
                     </div>
                 </div>
                 
                 <div class="category-group">
                     <span class="cat-name">數位娛樂</span>
                     <div class="merchant-list">
-                        <span class="merchant">Netflix/Disney+</span>
+                        <span class="merchant">Netflix</span>
+                        <span class="merchant">Disney+</span>
                         <span class="merchant">YouTube Premium</span>
                         <span class="merchant">Apple 媒體服務</span>
-                        <span class="merchant">Steam/Nintendo</span>
+                        <span class="merchant">Steam</span>
+                        <span class="merchant">Nintendo</span>
                     </div>
                 </div>
             </div>
@@ -955,16 +1099,11 @@
 
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // 移除 Active 狀態
             navButtons.forEach(b => b.classList.remove('active'));
             viewSections.forEach(s => s.classList.remove('active'));
-
-            // 加入 Active 狀態
             btn.classList.add('active');
             const targetViewId = btn.getAttribute('data-view');
             document.getElementById(targetViewId).classList.add('active');
-
-            // 滾動到頂部 (稍微保留 header)
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
@@ -975,16 +1114,64 @@
 
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // 移除 Active 狀態
             tabButtons.forEach(b => b.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
-
-            // 加入 Active 狀態
             btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
             document.getElementById(targetId).classList.add('active');
         });
     });
+
+    // 3. 台新 & 國泰 方案切換互動 (單選)
+    // 選擇台新區域內的所有方案卡
+    const taishinCards = document.querySelectorAll('#taishin .scheme-card');
+    taishinCards.forEach(card => {
+        card.addEventListener('click', () => {
+            taishinCards.forEach(c => c.classList.remove('active-scheme'));
+            card.classList.add('active-scheme');
+        });
+    });
+
+    // 選擇國泰區域內的所有方案卡
+    const cathayCards = document.querySelectorAll('#cathay .scheme-card');
+    cathayCards.forEach(card => {
+        card.addEventListener('click', () => {
+            cathayCards.forEach(c => c.classList.remove('active-scheme'));
+            card.classList.add('active-scheme');
+        });
+    });
+
+    // 4. 玉山 特店選擇互動 (複選)
+    const esunMerchants = document.querySelectorAll('#esun .merchant');
+    const merchantCountEl = document.getElementById('merchant-count');
+    let selectedCount = 0;
+
+    esunMerchants.forEach(merchant => {
+        merchant.addEventListener('click', (e) => {
+            // 阻止冒泡，避免觸發卡片點擊（雖然卡片本身沒事件，但為了保險）
+            e.stopPropagation();
+
+            if (merchant.classList.contains('selected-merchant')) {
+                merchant.classList.remove('selected-merchant');
+                selectedCount--;
+            } else {
+                if (selectedCount >= 8) {
+                    alert('最多只能選擇 8 家特店喔！');
+                    return;
+                }
+                merchant.classList.add('selected-merchant');
+                selectedCount++;
+            }
+            merchantCountEl.textContent = selectedCount;
+        });
+    });
+
+    // 重置按鈕功能
+    function resetMerchants() {
+        esunMerchants.forEach(m => m.classList.remove('selected-merchant'));
+        selectedCount = 0;
+        merchantCountEl.textContent = 0;
+    }
 </script>
 
 </body>
